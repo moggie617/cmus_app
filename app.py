@@ -58,6 +58,18 @@ def read_config(config_file):
 def index():
     return {'host': settings['cmus_host']}
 
+@post('/term')
+def run_terminal():
+
+    
+    com = request.POST.get('val')
+    
+    try:
+        out = Remote('-C',com)
+        return {'result':out.exit_code,'output':out.stdout.decode()}
+    except ErrorReturnCode_1:
+        abort(503,'Cmus not running.')
+        
 
 @post('/cmd')
 def run_command():
@@ -67,11 +79,14 @@ def run_command():
                       'Previous': 'player-prev',
                       'Increase Volume': 'vol +1%',
                       'Reduce Volume': 'vol -1%',
-                      'Mute': 'vol 0'}
+                      'Mute': 'vol 0',
+                      'Shuffle':'shuffle'
+                      }
     command = request.POST.get('command', default=None)
     if command in legal_commands:
         try:
             out = Remote('-C', legal_commands[command])
+
             return {'result': out.exit_code, 'output': out.stdout.decode()}
         except ErrorReturnCode_1:
             abort(503, 'Cmus not running.')

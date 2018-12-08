@@ -56,6 +56,7 @@
         #result {
             min-height: 2em;
         }
+
         footer { position: fixed; bottom: 1ex; }
     </style>
 </head>
@@ -71,6 +72,7 @@
         <button class="cmd-btn btn" title="Play"><i class="icon-play"></i></button>
         <button class="cmd-btn btn" title="Stop"><i class="icon-stop"></i></button>
         <button class="cmd-btn btn" title="Next"><i class="icon-fast-forward"></i></button>
+        <button class="cmd-btn btn" title="Shuffle"><i class="icon-random"></i></button>
     </span>
 
     <span class="btn-group">
@@ -80,7 +82,7 @@
     </span>
 
     <button class="status-btn btn btn-round" title="Update Status"><i class="icon-info-sign"></i></button>
-
+    <button class="btn btn-round" id='term_cmd' title="input terminal"><i class="icon-terminal"></i></button>
 </div>
 
 <div id="result"></div>
@@ -92,6 +94,17 @@
 </div>
 <script src="/static/zepto.min.js"></script>
 <script type="text/javascript">
+    function runText(value){
+   	 $.ajax({type: 'POST', url: '/term', data: {val: value}, context: $("div#result"),
+	    error: function(){
+		var msg = '<p class="red lable"><i class="icon-remove"></i>' + value + '</p>';
+		this.html(msg)
+	    },
+	    success: function(){
+		var msg = '<p class="green label"><i class="icon-ok"></i>'+value+'</p>';
+	        this.html(msg)
+	    }})
+   }
     function runCommand(command){
         $.ajax({type: 'POST', url: '/cmd', data: {command: command}, context: $("div#result"),
             error: function(){
@@ -147,6 +160,12 @@
     Zepto(function() {
         updateStatus()
     })
+    $("#term_cmd").on('click',(function(){
+	
+	cmd=prompt("input cmus command,\ncommand in https://linux.die.net/man/1/cmus","");
+	runText(cmd);
+	updateStatus();
+    }))
 </script>
 </body>
 </html>
